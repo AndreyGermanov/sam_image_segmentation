@@ -4,11 +4,20 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector("#uploadImage").addEventListener("click", () => {
         const input = document.createElement("input");
         input.setAttribute("type", "file");
-        input.addEventListener("change", (event) => {
+        input.addEventListener("change", async(event) => {
             if (!event.target.files.length) {
                 return
             }
+            const canvas = document.querySelector("canvas");
+            canvas.width = 0
+            canvas.height = 0
             file = event.target.files[0];
+            const form = new FormData();
+            form.append("image",file,file.name);
+            await fetch("/set_image", {
+                method: "POST",
+                body: form,
+            })
             uploadImage(file);
         })
         document.body.appendChild(input);
@@ -39,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const canvas = document.querySelector("canvas");
         canvas.style.cursor = "wait";
         const form = new FormData();
-        form.append("image",file,file.name);
         form.append("x", event.offsetX);
         form.append("y", event.offsetY);
         is_loading = true;
