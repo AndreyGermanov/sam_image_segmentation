@@ -51,14 +51,22 @@ document.addEventListener("DOMContentLoaded", () => {
         form.append("x", event.offsetX);
         form.append("y", event.offsetY);
         is_loading = true;
-        const response = await fetch("/segment", {
-            method: "POST",
-            body: form,
-        })
-        const json = await response.json();
-        contour = json.contour;
+        let response = null;
+        try {
+            response = await fetch("/segment", {
+                method: "POST",
+                body: form,
+            })
+        } catch (err) {
+            console.error(err);
+        }
         is_loading = false;
         canvas.style.cursor = "pointer";
+        if (!response) {
+            return;
+        }
+        const json = await response.json();
+        contour = json.contour;
         await uploadImage(file);
         const ctx = canvas.getContext("2d");
         ctx.strokeStyle = "#00ff00"
